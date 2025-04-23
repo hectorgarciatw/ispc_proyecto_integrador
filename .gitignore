@@ -1,0 +1,40 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor folders
+.vscode/
+.idea/
+
+# OS metadata
+*.swp
+*.swo
+
+# Tailwind output (en caso de usar CLI y generar un CSS final)
+public/styles.css
+
+# Optional: macOS & Linux Trash
+.Trash-*
+
+# Optional: local development tools
+*.local
+*.cache
+.next/
+out/
