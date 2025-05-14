@@ -1,12 +1,15 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+//Importamos componentes propios
+import Stats from "./components/Stats";
 
 function App() {
     const [products, setProducts] = useState([]);
     const [search, setSearch] = useState("");
+    const [show, setShow] = useState(true);
 
     useEffect(() => {
-        axios.get("https://dummyjson.com/products?limit=100").then((res) => {
+        axios.get("https://dummyjson.com/products?limit=50").then((res) => {
             setProducts(res.data.products);
         });
     }, []);
@@ -14,14 +17,12 @@ function App() {
     //Filtramos los productos obtenidos de la API
     const filteredProducts = products.filter((p) => p.title.toLowerCase().includes(search.toLowerCase()));
 
-    {
-        /* Constantes para estadísticas */
-    }
+    //Cantidad de productos en pantalla
     const totalProducts = filteredProducts.length;
-    {
-        /* Spread operator */
-    }
+
+    //El precio más caro
     const maxProduct = Math.max(...filteredProducts.map((p) => p.price));
+    //El precio más barato
     const minProduct = Math.min(...filteredProducts.map((p) => p.price));
 
     return (
@@ -45,15 +46,11 @@ function App() {
                 ))}
             </ul>
 
-            <div>
-                <h2>Estadísticas</h2>
-                <p>Productos totales: {totalProducts} productos</p>
-                <p>Precio máximo: {maxProduct}</p>
-                <p>Precio mínimo: {minProduct}</p>
-            </div>
+            <button onClick={() => setShow(!show)}>{show ? "Ocultar" : "Mostrar"}</button>
 
             {/* Renderización condicional */}
-            {filteredProducts.length === 0 && <div>No se encontraron productos</div>}
+            {show && <Stats total={totalProducts} max={maxProduct} min={minProduct} />}
+            {filteredProducts.length == 0 && <div>No se encontraron productos</div>}
         </>
     );
 }
