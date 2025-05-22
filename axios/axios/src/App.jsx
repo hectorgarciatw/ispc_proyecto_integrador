@@ -1,15 +1,21 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-//Importamos componentes propios
+import { useEffect, useState, useRef } from "react";
+
+//Componentes
 import Stats from "./components/Stats";
 
 function App() {
+    //Estados
     const [products, setProducts] = useState([]);
     const [search, setSearch] = useState("");
     const [show, setShow] = useState(true);
+    const [darkMode, setDarkMode] = useState(false);
+
+    //Referencias
+    const containerRef = useRef(null);
 
     useEffect(() => {
-        axios.get("https://dummyjson.com/products?limit=50").then((res) => {
+        axios.get("https://dummyjson.com/products?limit=100").then((res) => {
             setProducts(res.data.products);
         });
     }, []);
@@ -17,17 +23,26 @@ function App() {
     //Filtramos los productos obtenidos de la API
     const filteredProducts = products.filter((p) => p.title.toLowerCase().includes(search.toLowerCase()));
 
-    //Cantidad de productos en pantalla
+    {
+        /* Constantes para las estadísticas */
+    }
     const totalProducts = filteredProducts.length;
-
-    //El precio más caro
+    {
+        /* Spread operator */
+    }
     const maxProduct = Math.max(...filteredProducts.map((p) => p.price));
-    //El precio más barato
     const minProduct = Math.min(...filteredProducts.map((p) => p.price));
 
+    const toggleDarkMode = () => {
+        setDarkMode(!darkMode);
+        containerRef.current.classList.toggle("dark-mode");
+    };
+
     return (
-        <>
+        <div ref={containerRef}>
             <h1>Axios</h1>
+
+            <button onClick={toggleDarkMode}>Modo {darkMode ? "Claro" : "Oscuro"}</button>
 
             <input
                 type="text"
@@ -37,7 +52,6 @@ function App() {
                     setSearch(e.target.value);
                 }}
             />
-
             <ul>
                 {filteredProducts.map((p) => (
                     <li key={p.id}>
@@ -47,11 +61,11 @@ function App() {
             </ul>
 
             <button onClick={() => setShow(!show)}>{show ? "Ocultar" : "Mostrar"}</button>
-
             {/* Renderización condicional */}
-            {show && <Stats total={totalProducts} max={maxProduct} min={minProduct} />}
-            {filteredProducts.length == 0 && <div>No se encontraron productos</div>}
-        </>
+            {show && <Stats total={totalProducts} maximo={maxProduct} minimo={minProduct} />}
+            {/* Renderización condicional */}
+            {filteredProducts.length === 0 && <div>No se encontraron productos</div>}
+        </div>
     );
 }
 
