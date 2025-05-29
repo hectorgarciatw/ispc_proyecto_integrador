@@ -10,15 +10,18 @@ function App() {
     const [search, setSearch] = useState("");
     const [show, setShow] = useState(true);
     const [darkMode, setDarkMode] = useState(false);
+    const [page, setPage] = useState(1);
 
     //Referencias
     const containerRef = useRef(null);
 
+    const limit = 30;
+
     useEffect(() => {
-        axios.get("https://dummyjson.com/products?limit=100").then((res) => {
+        axios.get(`https://dummyjson.com/products?limit=${limit}&skip=${(page - 1) * limit}`).then((res) => {
             setProducts(res.data.products);
         });
-    }, []);
+    }, [page]);
 
     //Filtramos los productos obtenidos de la API
     const filteredProducts = products.filter((p) => p.title.toLowerCase().includes(search.toLowerCase()));
@@ -59,6 +62,26 @@ function App() {
                     </li>
                 ))}
             </ul>
+
+            <small>Estamos en la página {page}</small>
+            <br />
+
+            <button
+                disabled={page === 1}
+                onClick={() => {
+                    setPage(page - 1);
+                }}
+            >
+                Página anterior
+            </button>
+            <button
+                disabled={filteredProducts.length < 30}
+                onClick={() => {
+                    setPage(page + 1);
+                }}
+            >
+                Página siguiente
+            </button>
 
             <button onClick={() => setShow(!show)}>{show ? "Ocultar" : "Mostrar"}</button>
             {/* Renderización condicional */}
