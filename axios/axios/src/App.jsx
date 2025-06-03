@@ -11,6 +11,7 @@ function App() {
     const [show, setShow] = useState(true);
     const [darkMode, setDarkMode] = useState(false);
     const [page, setPage] = useState(1);
+    const [format, setFormat] = useState("");
 
     //Referencias
     const containerRef = useRef(null);
@@ -41,12 +42,31 @@ function App() {
         containerRef.current.classList.toggle("dark-mode");
     };
 
+    const handleExport = () => {
+        const blob = new Blob([JSON.stringify(filteredProducts, null, 2)], {
+            type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        triggerDownload(url, "productos.json");
+    };
+
+    const triggerDownload = (url, filename) => {
+        //crear el hipervinculo
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        //Agregamos el anchor tag en el DOM
+        document.body.appendChild(link);
+        //Simulas el click en el elemento
+        link.click();
+        //Eliminar el elemento anchor
+        document.body.removeChild(link);
+    };
+
     return (
         <div ref={containerRef}>
             <h1>Axios</h1>
-
             <button onClick={toggleDarkMode}>Modo {darkMode ? "Claro" : "Oscuro"}</button>
-
             <input
                 type="text"
                 placeholder="Buscar producto"
@@ -55,6 +75,12 @@ function App() {
                     setSearch(e.target.value);
                 }}
             />
+            //Selección de formátos de descarga
+            <select onChange={(e) => setFormat(e.target.value)} value={format}>
+                <option value="">Seleccionar formáto</option>
+                <option value="json">JSON</option>
+            </select>
+            <button onClick={handleExport}>Exportar archivo</button>
             <ul>
                 {filteredProducts.map((p) => (
                     <li key={p.id}>
@@ -62,10 +88,8 @@ function App() {
                     </li>
                 ))}
             </ul>
-
             <small>Estamos en la página {page}</small>
             <br />
-
             <button
                 disabled={page === 1}
                 onClick={() => {
@@ -82,7 +106,6 @@ function App() {
             >
                 Página siguiente
             </button>
-
             <button onClick={() => setShow(!show)}>{show ? "Ocultar" : "Mostrar"}</button>
             {/* Renderización condicional */}
             {show && <Stats total={totalProducts} maximo={maxProduct} minimo={minProduct} />}
